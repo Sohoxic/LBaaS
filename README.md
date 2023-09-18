@@ -1,11 +1,11 @@
 # LBAAS (Load Balancer as a Service)
 
 This is a implementation for load balancers using Round Robin technique in GO.
+<br></br>
+<a target="_blank" align="center">
+  <img src="https://github.com/Sohoxic/LBaaS/assets/98482003/c7ae944f-b35a-4852-827c-bd7681219f05" align="center">
+</a>
 
-<div align="center>
-  
-![image](https://github.com/Sohoxic/LBaaS/assets/98482003/c7ae944f-b35a-4852-827c-bd7681219f05)
-</div>
 
 ![image](https://github.com/Sohoxic/LBaaS/assets/98482003/49075a7a-8988-4202-818f-0b222a471eef)
 ![image](https://github.com/Sohoxic/LBaaS/assets/98482003/af0bb396-2b4c-4b17-86e2-7ec8171f3ddd)
