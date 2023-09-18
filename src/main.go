@@ -50,12 +50,41 @@ func handleErr(err error){
 	}
 }
 
-func (lb *LoadBalancer) getNextAvailableServer() Server{}
+func (s *simpleServer) Address() string {return s.addr}
 
-func (lb *LoadBalancer) serverProxy(rw http.ResponseWriter, r *httpRequest){} 
+func (s *simpleServer) IsAlive() bool {return true}
+
+func (s *simpleServer) Serve(rw http.ResponseWriter, req *httpRequest) {
+	s.proxy.ServeHTTP(rw, req)
+}
+
+func (lb *LoadBalancer) getNextAvailableServer() Server{
+	server := lb.servers[lb.roundRobinCount%len(lb.servers)]
+	for !server.IsAlive(){
+		lb.roundRobinCount++
+		server = lb.servers[lb.roundRobinCount%len(lb.servers)]
+	}
+	lb.roundRobinCount++
+	return server
+}
+
+func (lb *LoadBalancer) serveProxy(rw http.ResponseWriter, req *httpRequest){
+	targetServer := lb.getNextAvailableServer()
+	fmt.Printf("forwarding request to address %q\n", targetServer.Address())
+	targetServer.Serve(rw, req)
+} 
 
 func main(){
 	servers := []Server{
-		newSimpleServer
+		newSimpleServer("https://www.facebook.com/")
+		newSimpleServer("https://www.bing.com/")
+		newSimpleServer("https://duckduckgo.com/")
 	}
+	lb := NewLoadBalancer("8000", servers)
+	handleRedirect := func(rw http.ResponseWriter, r *httpRequest){
+		lb.serveProxy(rw,req)
+	}
+	http.HandleFunc("/", handleRedirect)
+	fmt.Printf("serving requests at 'localhost:%s'\n", lb.port)
+	http.ListenAndServe(":"+lb.port, nil)
 }
